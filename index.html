@@ -461,6 +461,8 @@
         const new_listener = () => {
           const videoId = item.dataset.vid;
           currentVideoId = videoId; // Store the video ID for the YouTube button
+          localStorage.setItem('lastSelectedVideo', videoId);
+
           player.source = {
             type: 'video',
             sources: [{ src: videoId, provider: 'youtube' }]
@@ -513,7 +515,23 @@
     attachClassItemListeners();
 
     // Download Emoji button functionality using the stored video ID
-    const downloadEmojiBtn = document.getElementById('downloadEmojiBtn');
+    
+    
+    // Auto-load last selected video from localStorage and scroll into view
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const lastVideoId = localStorage.getItem('lastSelectedVideo');
+        if (lastVideoId) {
+          const lastItem = [...document.querySelectorAll('.class-item')].find(item => item.dataset.vid === lastVideoId);
+          if (lastItem) {
+            lastItem.click(); // Load and highlight
+            lastItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+      }, 2000);
+    });
+
+const downloadEmojiBtn = document.getElementById('downloadEmojiBtn');
     downloadEmojiBtn.addEventListener('click', () => {
       if (currentVideoId) {
         const youtubeUrl = `https://www.youtube.com/watch?v=${currentVideoId}`;
