@@ -120,6 +120,110 @@
       color: #888;
       border-top: 1px solid #222;
     }
+/* Plyr Customizations */
+    .plyr {
+    border-radius: 8px; /* Optional: if the player itself should have rounded corners */
+    overflow: hidden; /* To contain the gradient within rounded corners if any */
+}
+
+.plyr__video-wrapper {
+    background: linear-gradient(120deg, #6a0dad, #e53985, #ff8c42); /* Purple to Pink to Orange-Red */
+}
+
+/* Big play button in the center */
+.plyr__control--overlaid {
+    background: rgba(255, 255, 255, 0.2) !important; /* Semi-transparent white circle */
+    border-radius: 50%;
+    padding: 20px !important; /* Adjust size */
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+.plyr__control--overlaid svg {
+    width: 50px !important; /* Adjust icon size */
+    height: 50px !important;
+    color: white !important;
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+}
+
+/* General control icon color */
+.plyr__controls .plyr__control svg {
+    color: white !important;
+}
+.plyr__controls .plyr__control:hover svg {
+    color: #f0f0f0 !important; /* Slightly off-white on hover */
+}
+
+/* Progress bar */
+.plyr__progress {
+    max-width: 100% !important; /* Increase width of progress bar container */
+    width: 100% !important; /* Ensure it takes more space */
+    margin: center auto !important; /* Center it if needed */
+}
+
+.plyr__progress input[type=range] {
+    color: white !important; /* This sets the thumb and played progress color in Plyr */
+    height: 5px !important; /* Make it thinner */
+}
+
+/* Customizing the track of the progress bar */
+.plyr__progress input[type=range]::-webkit-slider-runnable-track {
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Light track */
+    height: 5px !important;
+}
+.plyr__progress input[type=range]::-moz-range-track {
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Light track */
+    height: 5px !important;
+}
+.plyr__progress input[type=range]::-ms-track {
+    background-color: rgba(255, 255, 255, 0.3) !important; /* Light track */
+    height: 5px !important;
+}
+
+/* Hide volume slider */
+.plyr__volume {
+    display: none !important;
+}
+
+/* Control bar background - make it transparent or semi-transparent */
+.plyr__controls {
+    background: linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0)) !important; /* Darker at bottom, fading to transparent */
+    padding-top: 20px !important; /* Add padding so controls don't stick to the very bottom if gradient is too subtle */
+    border-bottom-left-radius: 8px; /* Match player radius */
+    border-bottom-right-radius: 8px;
+}
+
+/* Ensure text like current time is also white */
+.plyr__time {
+    color: white !important;
+}
+
+/* Tooltips for controls */
+.plyr__tooltip {
+    background: rgba(0,0,0,0.8) !important;
+    color: white !important;
+    border-radius: 4px !important;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.5) !important;
+}
+
+/* Settings menu */
+.plyr__menu__container {
+    background: rgba(0,0,0,0.85) !important;
+    color: white !important;
+    border-radius: 4px !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important;
+}
+.plyr__menu__container [role=menuitemradio], .plyr__menu__container [role=menuitem] {
+    color: white !important;
+}
+.plyr__menu__container [role=menuitemradio]:hover, .plyr__menu__container [role=menuitem]:hover {
+    background: rgba(255,255,255,0.1) !important;
+}
+.plyr__menu__container .plyr__control--active {
+    background: rgba(255,255,255,0.2) !important;
+}
+.plyr__menu__container .plyr__control--active svg {
+    color: white !important;
+}
   </style>
 </head>
 <body class="font-sans">
@@ -131,7 +235,12 @@
   <div class="container mx-auto p-4 flex flex-col lg:flex-row gap-4">
     <div class="lg:w-3/4 bg-white rounded-lg shadow-md p-4">
       <h2 class="text-lg font-semibold mb-4 text-gray-100">Live Class</h2>
-      <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="RUQcm3vIbWo"></div>
+      <div style="position: relative;"> <!-- Wrapper for player and custom share button -->
+        <div id="player" data-plyr-provider="youtube" data-plyr-embed-id="RUQcm3vIbWo"></div>
+        <button id="customShareBtn" title="Share" style="position: absolute; top: 15px; right: 15px; z-index: 20; background: none; border: none; cursor: pointer; padding: 0;">
+          <i class="fas fa-share-alt" style="color: white; font-size: 20px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));"></i>
+        </button>
+      </div>
       <div class="flex space-x-4 mt-4">
         <a id="downloadPdfBtn" href="https://www.bondipathshala.com.bd/pdf/20240527-1716748184-LRH05IsN.pdf" target="_blank" class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
           <i class="fas fa-file-pdf mr-2"></i>Download PDF
@@ -249,19 +358,57 @@
     </div>
   </div>
 
-  <footer class="bg-gray-800 text-white p-4 text-center">
-    <p>©Developed by Arnoy with Grok and Gemini.</p>
-    <div class="footer-quotes">
-      <p>রচনায় প্যারা যত বেশি, নাম্বার ও তত বেশী</p>
-        <p>পরীক্ষার আগের রাতের পড়া হচ্ছে আসল পড়া</p>
+<footer class="bg-gray-900 text-white py-8 px-4 md:px-8 relative overflow-hidden">
+  <!-- Neon Glow Background Effect -->
+  <div class="absolute inset-0 bg-gradient-to-r from-pink-500/20 via-cyan-500/20 to-lime-500/20 animate-pulse"></div>
+  
+  <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left relative z-10">
+    <!-- Brand/Logo Section -->
+    <div>
+      <h2 class="text-3xl font-extrabold tracking-wider text-lime-400>Bondi Pathshala</h2>
+      <p class="mt-2 text-lime-300 t-medium">Bondi Pathshala</p>
     </div>
-  </footer>
+
+    <!-- Navigation Links -->
+    <div>
+      <h3 class="text-lg font-bold text-lime-400 mb-4 drop-shadow-[0_0_8px_rgba(132,204,22,0.6)]">মন ফ্রেশ থাকলে পড়া বেশি মনে থাকে!</h3>
+      <ul class="space-y-2 text-cyan-300 text-sm">
+  <li>পড়ায় ঝড় তুলো!</li>
+  <li>রঙিন নোট ফাটাও!</li>
+  <li> বই  পড়ো!</li>
+      </ul>
+    </div>
+
+    <!-- Social Media & Contact -->
+    <div>
+      <h3 class="text-lg font-bold text-lime-400 mb-4 drop-shadow-[0_0_8px_rgba(132,204,22,0.6)]">Connect With Us</h3>
+      <div class="flex justify-center md:justify-start space-x-4 mb-4">
+        <a href="#" class="hover:scale-110 transform transition-transform duration-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.5)]">
+          <svg class="w-6 h-6 fill-current text-cyan-300 hover:text-pink-400" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+          </svg>
+        </a>
+        <a href="#" class="hover:scale-110 transform transition-transform duration-300 drop-shadow-[0_0_6px_rgba(236,72,153,0.5)]">
+          <svg class="w-6 h-6 fill-current text-cyan-300 hover:text-pink-400" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 14v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1h-6v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+        </a>
+      </div>
+      <p class="text-cyan-300 text-sm font-medium">Email: <a href="mailto:arnoy799@gmail.com" class="hover:text-pink-400 transition-colors duration-300 hover:drop-shadow-[0_0_6px_rgba(236,72,153,0.5)]">arnoy799@gmail.com</a></p>
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="border-t border-pink-500/50 mt-8 pt-4 text-center text-cyan-300 text-sm font-medium">
+    <p>© 2025 Bondi Pathshala. All rights reserved.</p>
+  </div>
+</footer>
 
   <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
   <script>
     // Initialize Plyr
     const player = new Plyr('#player', {
-      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'settings', 'pip', 'fullscreen'],
+      controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time',  'settings', 'pip', 'fullscreen'],
       youtube: { noCookie: true, rel: 0, showinfo: 0, modestbranding: 1 }
     });
 
@@ -318,6 +465,23 @@
             type: 'video',
             sources: [{ src: videoId, provider: 'youtube' }]
           };
+// Custom Share Button Functionality
+    const customShareBtn = document.getElementById('customShareBtn');
+    if (customShareBtn) {
+      customShareBtn.addEventListener('click', () => {
+        if (currentVideoId) {
+          const youtubeUrl = `https://www.youtube.com/watch?v=${currentVideoId}`;
+          navigator.clipboard.writeText(youtubeUrl).then(() => {
+            alert('Video link copied to clipboard!');
+          }).catch(err => {
+            console.error('Failed to copy video link: ', err);
+            alert('Failed to copy video link. Please try again.');
+          });
+        } else {
+          alert("No video selected to share.");
+        }
+      });
+    }
           classItems.forEach(i => i.classList.remove('bg-blue-200'));
           item.classList.add('bg-blue-200');
           const pdfLink = item.dataset.npdf;
@@ -395,7 +559,43 @@
         }
       }
     });
-  </script>
+  
+    // Store time every 10 seconds
+    setInterval(() => {
+      if (player && currentVideoId && !player.paused) {
+        const currentTime = player.currentTime;
+        const progressKey = `videoProgress_${currentVideoId}`;
+        localStorage.setItem(progressKey, currentTime);
+        console.log(`Saved progress: ${currentTime.toFixed(2)}s for video ${currentVideoId}`);
+      }
+    }, 10000); // every 10 sec
+
+    // Load saved time and seek
+    player.on('ready', () => {
+      if (currentVideoId) {
+        const progressKey = `videoProgress_${currentVideoId}`;
+        const savedTime = parseFloat(localStorage.getItem(progressKey));
+        if (!isNaN(savedTime)) {
+          player.currentTime = savedTime;
+          console.log(`Resuming from saved time: ${savedTime.toFixed(2)}s`);
+        }
+      }
+    });
+
+    // Also listen when the video source changes (like clicking a different class)
+    player.on('sourcechange', () => {
+      setTimeout(() => {
+        if (currentVideoId) {
+          const progressKey = `videoProgress_${currentVideoId}`;
+          const savedTime = parseFloat(localStorage.getItem(progressKey));
+          if (!isNaN(savedTime)) {
+            player.currentTime = savedTime;
+            console.log(`Resuming from saved time: ${savedTime.toFixed(2)}s`);
+          }
+        }
+      }, 500);
+    });
+</script>
 
 </body>
 </html>
